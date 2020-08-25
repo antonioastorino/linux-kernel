@@ -10,7 +10,7 @@ mov		bx, hello_string	; move the address of the label to bx
 loop:	mov		al, [bx]	; move the value bx points to in al
 		cmp		al, 0x00	; check if al contains '\0'
 		je		exit		; exit if we reached '\0'
-		mov 	cx, 	$
+		push  	$
 		jmp 	dummy
 		int 	0x10		; print value in al
 		inc		bx			; increment the pointer in bx
@@ -18,7 +18,8 @@ loop:	mov		al, [bx]	; move the value bx points to in al
 
 exit: 	jmp exit 			; infinite loop
 
-dummy:	add  	cx, 0x05
+dummy:	pop		cx
+		add  	cx, 0x05
 		jmp 	cx
 
 hello_string:

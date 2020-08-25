@@ -3,24 +3,25 @@
 
 mov		bp, 0x8000
 
-xor		ax, ax
-mov		ah, 0x0e 			; tty mode
 mov		bx, hello_string	; move the address of the label to bx
+call	print
+
+jmp $ 						; infinite loop
+
+print:	push	ax
+		push 	bx
+		xor		ax, ax
+		mov		ah, 0x0e 			; tty mode
 
 loop:	mov		al, [bx]	; move the value bx points to in al
 		cmp		al, 0x00	; check if al contains '\0'
 		je		exit		; exit if we reached '\0'
-		push  	$
-		jmp 	dummy
 		int 	0x10		; print value in al
 		inc		bx			; increment the pointer in bx
 		jmp		loop		; repeat
-
-exit: 	jmp exit 			; infinite loop
-
-dummy:	pop		cx
-		add  	cx, 0x05
-		jmp 	cx
+exit:	pop		bx
+		pop		ax
+		ret
 
 hello_string:
 	db "Hello, world!", 0

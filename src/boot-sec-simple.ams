@@ -1,30 +1,26 @@
 ; nasm -fbin boot-sec-simple.ams -o boot-sec-simple.bin && qemu-system-x86_64 -drive format=raw,file=boot-sec-simple.bin
 [org 0x7c00]
 
-mov		bp, 0x8000
+        mov     bp, 0x8000          ; set bp far above the program
 
-mov		bx, hello_string	; move the address of the label to bx
-call	print
+        mov     bx, hello_string    ; move the address of the label to bx
+        call    print_s
+        call    print_s
 
-jmp $ 						; infinite loop
+        mov     bx, goodbye_string  ; move the address of the label to bx
+        call    print_s
+        call    print_s
 
-print:	push	ax
-		push 	bx
-		xor		ax, ax
-		mov		ah, 0x0e 			; tty mode
+        jmp $                       ; infinite loop
+; -------------------------------------------------------------------------
 
-loop:	mov		al, [bx]	; move the value bx points to in al
-		cmp		al, 0x00	; check if al contains '\0'
-		je		exit		; exit if we reached '\0'
-		int 	0x10		; print value in al
-		inc		bx			; increment the pointer in bx
-		jmp		loop		; repeat
-exit:	pop		bx
-		pop		ax
-		ret
+%include "print_string.ams"
 
 hello_string:
-	db "Hello, world!", 0
+    db "Hello, world!", 10, 0
+
+goodbye_string:
+    db "Goodbye, world!", 10, 0
 
 ; padding and magic number
 times 510 - ($-$$) db 0

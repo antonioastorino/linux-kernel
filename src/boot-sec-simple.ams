@@ -1,20 +1,27 @@
 ; nasm -fbin boot-sec-simple.ams -o boot-sec-simple.bin && qemu-system-x86_64 -drive format=raw,file=boot-sec-simple.bin
+
 [org 0x7c00]
 
-        mov     bp, 0x8000          ; set bp far above the program
+HEX_DIGITS equ 4 ; number of hex digits (half bytes) of numbers for printing
 
-        mov     bx, hello_string    ; move the address of the label to bx
-        call    print_s
-        call    print_s
+    mov     bp, 0x8000          ; set bp far above the program
 
-        mov     bx, goodbye_string  ; move the address of the label to bx
-        call    print_s
-        call    print_s
+    mov     bx, hello_string    ; move the address of the label to bx
+    call    print_s
+    call    print_s
 
-        jmp $                       ; infinite loop
+    mov     bx, goodbye_string  ; move the address of the label to bx
+    call    print_s
+    call    print_s
+
+    mov     bx, $0xab12         ; this number will be printed
+    call    print_h
+
+    jmp $                       ; infinite loop
+
 ; -------------------------------------------------------------------------
 
-%include "print_string.ams"
+%include "print.ams"
 
 hello_string:
     db "Hello, world!", 10, 0

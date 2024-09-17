@@ -3,16 +3,16 @@
 print_s:
     push    ax
     push    bx
-    mov     ah, 0x0e        ; tty mode
+    mov     bx, 0x0
 
-loop:
-    mov     al, [bx]        ; move the value bx points to in al
+.loop:
+    lodsb                   ; load si to al and increment si
     cmp     al, 0x00        ; check if al contains '\0'
-    je      exit            ; exit if we reached '\0'
+    je      .done            ; exit if we reached '\0'
+    mov     ah, 0eh
     int     0x10            ; print value in al
-    inc     bx              ; increment the pointer in bx
-    jmp     loop            ; repeat
-  exit:
+    jmp     .loop            ; repeat
+.done:
     pop     bx
     pop     ax
     ret

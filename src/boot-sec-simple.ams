@@ -14,7 +14,7 @@ HEX_DIGITS equ 4 ; number of hex digits (half bytes) of numbers for printing
     call    print_s
     call    print_s
 
-    mov     bx, $0xab12         ; this number will be printed
+    mov     bx, 0xab12         ; this number will be printed
     call    print_h
 
     jmp $                       ; infinite loop

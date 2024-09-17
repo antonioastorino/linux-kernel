@@ -1,0 +1,48 @@
+; print string pointed to by `bx`
+
+print_s:
+    push    ax
+    push    bx
+    mov     ah, 0x0e        ; tty mode
+
+loop:
+    mov     al, [bx]        ; move the value bx points to in al
+    cmp     al, 0x00        ; check if al contains '\0'
+    je      exit            ; exit if we reached '\0'
+    int     0x10            ; print value in al
+    inc     bx              ; increment the pointer in bx
+    jmp     loop            ; repeat
+  exit:
+    pop     bx
+    pop     ax
+    ret
+
+print_h:
+    push    ax
+    push    bx
+    push    cx
+    push    dx
+
+    mov     ah, 0x0e        ; tty mode
+    mov     dl, 0x00        ; counter
+  scan_num:
+    mov     cx, bx          ; keep bx and manipulate cx
+    and     cx, 0xf << ((HEX_DIGITS - 1) * 4)   ; take the highest byte
+    shr     cx, ((HEX_DIGITS - 1) * 4)          ; shif it to the lowest byte
+    add     cl, 48          ; convert value into corresp digit
+    cmp     cl, 57          ; check if the value exceedes the ascii for '9' (57)
+    jle     done
+    add     cl, 39          ; if it does, it's a letter -> add 39 to get its ascii
+  done:
+    mov     al, cl          ; copy result for printing
+    int     0x10            ; print
+    shl     bx, 4           ; shift bx to repeat for the next highest byte
+    inc     dl
+    cmp     dl, HEX_DIGITS  ; we are done when matching the number of hex digits
+    jl      scan_num        ; repeat if not
+
+    pop     dx
+    pop     cx
+    pop     bx
+    pop     ax
+    ret
